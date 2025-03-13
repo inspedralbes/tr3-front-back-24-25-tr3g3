@@ -1,21 +1,21 @@
-import { useAppStore } from '@/stores/appStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useRoute, useRouter } from 'nuxt/app';
 
 export function useAuth() {
-    const appStore = useAppStore();
+
     const authStore = useAuthStore();
     const router = useRouter();
     const route = useRoute();
 
     const config = useRuntimeConfig();
-    const BASE_URL = config.public.API_BASE_URL;
+    const BASE_URL = config.public.API_BASE_URL + '/auth';
 
-    const login = async (credentials) => {
+    const login = async (email, password) => {
         try {
-            return await $fetch(`${BASE_URL}/auth/login`, {
+            return await $fetch(`${BASE_URL}/login`, {
                 method: "POST",
-                body: credentials,
+                body: { email, password },
+                credentials: "include",
             });
         } catch (error) {
             console.error("Error en el inicio de sesión:", error);
@@ -24,7 +24,7 @@ export function useAuth() {
     };
 
     const loginGoogle = () => {
-        window.location.href = `${BASE_URL}/api/auth/google`;
+        window.location.href = `${BASE_URL}/google`;
     };
 
     const processUserFromQuery = () => {
@@ -75,6 +75,20 @@ export function useAuth() {
         }
     };
 
+    const register = async (username, email, password) => {
+        try {
+            console.log("Enviando solicitud de registro...");
+            return await $fetch(`${BASE_URL}/send-verification-email`, {
+                method: "POST",
+                body: { username, email, password },
+                credentials: "include",
+            });
+        } catch (error) {
+            console.error("Error en el registro:", error);
+            throw error;
+        }
+    };
+
     const verifyEmailToken = async (token) => {
         if (!token) throw new Error("Token not provided");
 
@@ -88,14 +102,5 @@ export function useAuth() {
         }
     };
 
-    const logout = async () => {
-        try {
-            return await $fetch(`${BASE_URL}/api/auth/logout`, { method: "POST" });
-        } catch (error) {
-            console.error("Error en el cierre de sesión:", error);
-            throw error;
-        }
-    };
-
-    return { login, loginGoogle, processUserFromQuery, forgotPassword, resetPassword, verifyEmailToken, logout };
+    return { login, loginGoogle, forgotPassword, processUserFromQuery, register, verifyEmailToken, resetPassword };
 }

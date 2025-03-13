@@ -4,13 +4,13 @@
             :profileImg="'/profile-icon.jpg'" :profileOptions="[]" :logoutLink="''" :isLogged="false" />
         <div class="flex flex-1 flex-col items-center justify-center bg-gray-100">
             <div class="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold text-center text-gray-700">Recuperar contraseña</h2>
-                <p class="mt-2 text-sm text-gray-600 text-center">Ingresa tu correo electrónico y te enviaremos un
-                    enlace para
-                    restablecer tu contraseña.</p>
+                <h2 class="text-2xl font-semibold text-center text-gray-700">Recuperar contrasenya</h2>
+                <p class="mt-2 text-sm text-gray-600 text-center">Introdueix el teu correu electrònic i t'enviarem un
+                    enllaç per
+                    restablir la teva contrasenya.</p>
                 <form @submit.prevent="sendResetLink" class="mt-4">
                     <label class="block">
-                        <span class="text-gray-700">Correo electrónico</span>
+                        <span class="text-gray-700">Correu electrònic</span>
                         <input type="email" v-model="email" required
                             class="mt-1 block w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-200 focus:outline-none">
                     </label>
@@ -26,16 +26,16 @@
                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                 </path>
                             </svg>
-                            <span>Cargando...</span>
+                            <span>Carregant...</span>
                         </div>
-                        <span v-else>Enviar enlace</span>
+                        <span v-else>Enviar enllaç</span>
                     </button>
                 </form>
 
-                <!-- Mensaje de éxito -->
+                <!-- Missatge d'èxit -->
                 <p v-if="message" class="mt-4 text-sm text-green-600 text-center">{{ message }}</p>
 
-                <!-- Mensaje de error -->
+                <!-- Missatge d'error -->
                 <p v-if="errorMessage" class="mt-4 text-sm text-red-600 text-center">{{ errorMessage }}</p>
             </div>
         </div>

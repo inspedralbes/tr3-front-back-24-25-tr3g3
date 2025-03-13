@@ -1,9 +1,7 @@
 <template>
-    <h1 class="text-3xl font-bold underline">
-        /auth/login
-    </h1>
+    <LoginForm />
 </template>
 
 <script setup>
-
+import LoginForm from "@/components/auth/LoginForm.vue";
 </script>

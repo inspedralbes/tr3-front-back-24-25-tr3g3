@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <h1 class="text-2xl font-semibold mb-4">Verificando el registro</h1>
+        <h1 class="text-2xl font-semibold mb-4">Verificant el registre</h1>
 
         <!-- Error message -->
         <div v-if="error" class="text-red-500 bg-red-100 border border-red-400 p-4 rounded-md mb-4">
@@ -9,7 +9,7 @@
 
         <!-- Success message -->
         <div v-if="success" class="text-green-500 bg-green-100 border border-green-400 p-4 rounded-md mb-4">
-            <p>Registro completado con exito!</p>
+            <p>Registre completat amb èxit!</p>
         </div>
 
         <!-- Loading spinner while waiting -->
@@ -18,7 +18,7 @@
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            <span class="text-lg text-blue-500">Verificando...</span>
+            <span class="text-lg text-blue-500">Verificant...</span>
         </div>
     </div>
 </template>

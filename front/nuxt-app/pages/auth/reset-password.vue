@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <h1 class="text-2xl font-semibold mb-4">Cambio de contraseña</h1>
+        <h1 class="text-2xl font-semibold mb-4">Canvi de contrasenya</h1>
 
         <!-- Error message -->
         <div v-if="error" class="text-red-500 bg-red-100 border border-red-400 p-4 rounded-md mb-4">
@@ -9,16 +9,16 @@
 
         <!-- Success message -->
         <div v-if="success" class="text-green-500 bg-green-100 border border-green-400 p-4 rounded-md mb-4">
-            <p class="text-center">Cambio de contraseña completado con éxito!</p>
-            <p class="text-center">Puedes cerrar esta pestaña</p>
+            <p class="text-center">Canvi de contrasenya completat amb èxit!</p>
+            <p class="text-center">Pots tancar aquesta pestanya</p>
         </div>
 
         <!-- Password reset form -->
         <form v-if="!success" @submit.prevent="handleResetPassword" class="w-80 bg-white p-6 rounded-md shadow-md">
-            <input v-model="newPassword" type="password" placeholder="Escribe tu nueva contraseña"
+            <input v-model="newPassword" type="password" placeholder="Escriu la teva nova contrasenya"
                 class="w-full px-4 py-2 border rounded-md mb-4" required />
             <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">
-                Restablecer Contraseña
+                Restablir Contrasenya
             </button>
         </form>
 
@@ -28,7 +28,7 @@
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            <span class="text-lg text-blue-500">Verificando...</span>
+            <span class="text-lg text-blue-500">Verificant...</span>
         </div>
     </div>
 </template>

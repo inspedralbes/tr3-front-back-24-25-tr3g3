@@ -5,5 +5,9 @@
 </template>
 
 <script setup>
+import { useAuth } from "~/services/useAuth";
+
+const { login } = useAuth();
+
 
 </script>
