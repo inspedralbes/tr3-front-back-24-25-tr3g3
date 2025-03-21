@@ -1,5 +1,4 @@
 import { Server } from "socket.io";
-import axios from "axios"; // Para hacer la petición HTTP
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -8,8 +7,20 @@ let io;
 
 const validateToken = async (token) => {
     try {
-        const response = await axios.post(process.env.API_VALIDATE_TOKEN, { token });
-        return response.data.valid; // Suponiendo que la API responde con { valid: true/false }
+        const response = await fetch(process.env.API_VALIDATE_TOKEN, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to validate token');
+        }
+
+        const data = await response.json();
+        return data.valid;
     } catch (error) {
         console.error("Error validando el token:", error);
         return false;
