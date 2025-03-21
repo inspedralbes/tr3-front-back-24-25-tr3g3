@@ -1,8 +1,10 @@
+// auth-route.js
 import express from 'express';
 import passport from 'passport';
 import { createUser, getUserByEmail, changePassword } from '../controllers/userController.js';
 import { createToken, verifyToken, createPasswordResetToken } from '../controllers/verifyTokenController.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../emailService.js';
+import { generateJWToken, verifyTokenAdmin, verifyTokenUser } from '../controllers/authTokenController.js';
 
 const router = express.Router();
 
@@ -14,7 +16,30 @@ router.post('/login', (req, res, next) => {
 
         req.logIn(user, (err) => {
             if (err) return res.status(500).json({ message: 'Error al iniciar sesión', error: err.message });
-            res.status(200).json({ redirectUrl: `${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}` });
+            
+            // Generar token JWT para el usuario
+            try {
+                // Determinar el rol del usuario (ajusta según tu estructura de datos)
+                const rol = user.rol || 'cliente'; // Por defecto asigna 'cliente' si no tiene rol
+                
+                // Datos a incluir en el token (elimina datos sensibles)
+                const tokenData = {
+                    id: user.id,
+                    email: user.email,
+                    username: user.username
+                };
+                
+                const token = generateToken(tokenData, rol);
+                
+                // Enviar el token al cliente
+                res.status(200).json({ 
+                    message: 'Login exitoso',
+                    token: token,
+                    user: tokenData
+                });
+            } catch (error) {
+                return res.status(500).json({ message: 'Error al generar token', error: error.message });
+            }
         });
     })(req, res, next);
 });
@@ -22,7 +47,27 @@ router.post('/login', (req, res, next) => {
 // LOGIN CON GOOGLE
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
-    res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}`);
+    try {
+        const user = req.user;
+
+        // Determinar el rol del usuario (ajusta según tu estructura de datos)
+        const rol = user.rol || 'cliente'; // Por defecto asigna 'cliente' si no tiene rol
+
+        // Datos a incluir en el token (elimina datos sensibles)
+        const tokenData = {
+            id: user.id,
+            email: user.email,
+            username: user.username
+        };
+
+        const token = generateJWToken(tokenData, rol);
+
+        // Redirige al frontend con el token como parámetro de URL
+        res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}?token=${token}`);
+    } catch (error) {
+        console.error('Error al generar token:', error);
+        res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/error?message=${encodeURIComponent('Error al generar token')}`);
+    }
 });
 
 // CERRAR SESIÓN
