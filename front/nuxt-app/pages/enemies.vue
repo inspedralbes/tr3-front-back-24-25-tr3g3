@@ -65,7 +65,7 @@
                     <div class="space-y-4">
                         <h3 class="font-medium text-lg border-b pb-2">Atributos</h3>
 
-                        <div v-for="(value, key) in selectedEnemy.attributes" :key="key" class="mb-4">
+                        <div v-for="(value, key) in selectedEnemy.stats" :key="key" class="mb-4">
                             <div class="flex justify-between items-center">
                                 <label class="block text-sm font-medium text-gray-700">
                                     {{ formatAttributeName(key) }}: {{ value }}
@@ -74,7 +74,7 @@
                                     {{ getAttributeUnit(key) }}
                                 </span>
                             </div>
-                            <input v-model.number="selectedEnemy.attributes[key]" type="range"
+                            <input v-model.number="selectedEnemy.stats[key]" type="range"
                                 :min="getAttributeMin(key)" :max="getAttributeMax(key)" :step="getAttributeStep(key)"
                                 class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
                         </div>
@@ -114,7 +114,7 @@ const enemies = ref([
         name: 'Grunt',
         level: 1,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             shootingDistance: 2,
             maxHealth: 1,
             enemyDamage: 2
@@ -124,7 +124,7 @@ const enemies = ref([
         name: 'Lobo',
         level: 2,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             damage: 2,
             detectionRange: 3.0,
             maxHealth: 1,
@@ -135,7 +135,7 @@ const enemies = ref([
         name: 'Ogro',
         level: 4,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             maxHealth: 6,
             damage: 3,
             attackCooldown: 4.0,
@@ -146,7 +146,7 @@ const enemies = ref([
         name: 'Fantasma',
         level: 3,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             moveSpeed: 4.0,
             detectionRange: 6.0,
             maxHealth: 1
@@ -156,7 +156,7 @@ const enemies = ref([
         name: 'Caballo',
         level: 5,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             maxHealth: 6,
             damage: 3,
             moveSpeed: 2.0,
@@ -167,7 +167,7 @@ const enemies = ref([
         name: 'Grunt',
         level: 1,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             shootingDistance: 2,
             maxHealth: 1,
             enemyDamage: 2
@@ -177,7 +177,7 @@ const enemies = ref([
         name: 'Lobo',
         level: 2,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             damage: 2,
             detectionRange: 3.0,
             maxHealth: 1,
@@ -188,7 +188,7 @@ const enemies = ref([
         name: 'Ogro',
         level: 4,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             maxHealth: 6,
             damage: 3,
             attackCooldown: 4.0,
@@ -199,7 +199,7 @@ const enemies = ref([
         name: 'Fantasma',
         level: 3,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             moveSpeed: 4.0,
             detectionRange: 6.0,
             maxHealth: 1
@@ -209,7 +209,7 @@ const enemies = ref([
         name: 'Caballo',
         level: 5,
         img: '/profile-icon.jpg',
-        attributes: {
+        stats: {
             maxHealth: 6,
             damage: 3,
             moveSpeed: 2.0,
@@ -271,6 +271,8 @@ function saveEnemyChanges() {
         setTimeout(() => {
             document.body.removeChild(toast);
         }, 3000);
+
+        console.log(selectedEnemy.value);
     }
 }
 

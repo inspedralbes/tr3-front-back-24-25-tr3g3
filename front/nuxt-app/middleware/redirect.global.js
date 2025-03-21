@@ -4,7 +4,7 @@ import { defineNuxtRouteMiddleware } from 'nuxt/app';
 export default defineNuxtRouteMiddleware((to) => {
   const authStore = useAuthStore();  // Asegúrate de acceder al store aquí
 
-  const isAutenticated = null;
+  const isAutenticated = authStore.isAuthenticated;
 
   // Si el usuario no está autenticado
   if (!isAutenticated) {
