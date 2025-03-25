@@ -8,32 +8,16 @@ import * as userController from './controllers/userController.js';
 
 dotenv.config();
 
-/**
- * Adaptador para crear un usuario usando el controlador y obtener el objeto resultante.
- * Dado que la función createUser está pensada para Express (requiere req y res),
- * creamos un objeto "falso" que capture el JSON enviado.
- *
- * @param {string} email - Email del usuario
- * @param {string} username - Nombre de usuario
- * @param {string} password - Contraseña (sin hashear)
- * @returns {Promise<Object>} - Promesa que resuelve con el usuario creado
- */
-const createUserFromData = async (email, username, password) => {
-  return new Promise((resolve, reject) => {
-    const fakeReq = { body: { email, username, password } };
-    const fakeRes = {
-      status(code) {
-        return this;
-      },
-      json(data) {
-        resolve(data);
-      }
-    };
-    userController
-      .createUser(fakeReq, fakeRes)
-      .catch(reject);
-  });
-};
+const SQL_SERVICE_URL = process.env.SQL_SERVICE_URL;
+
+async function findUserByMail(email) {
+  const response = await fetch(`${SQL_SERVICE_URL}/user/email/${email}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Error en la solicitud');
+  }
+  return response.json();
+}
 
 /**
  * Estrategia de autenticación de Google OAuth.
@@ -48,12 +32,37 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
+
+        // Validate email exists in Google profile
+        if (!profile.emails || !profile.emails[0]) {
+          return done(new Error('No email found in Google profile'), null);
+        }
+
+        const email = profile.emails[0].value;
+
         // Busca un usuario existente por email usando el controlador
-        let user = await userController.getUserByEmail(profile.emails[0].value);
+        let user = await findUserByMail(email);
+
         if (!user) {
           // Si el usuario no existe, crea uno nuevo con un password aleatorio
           const randomPassword = crypto.randomBytes(16).toString('hex');
-          user = await createUserFromData(profile.emails[0].value, profile.displayName, randomPassword);
+          // Crea el usuario y obtiene el objeto resultante
+          const response = await fetch(`${SQL_SERVICE_URL}/user`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              username: profile.displayName,
+              password: randomPassword
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          user = await response.json();
         }
         // Elimina la propiedad password del objeto usuario por seguridad
         delete user.password;
@@ -78,7 +87,7 @@ passport.use(
     async (email, password, done) => {
       try {
         // Busca el usuario por email utilizando el controlador
-        const user = await userController.getUserByEmail(email);
+        const user = await findUserByMail(email);
         if (!user) {
           return done(null, false, { message: 'Usuario no encontrado' });
         }
