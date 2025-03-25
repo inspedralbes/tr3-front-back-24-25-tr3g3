@@ -1,21 +1,12 @@
 // IMPORTS Y USES -------------------------------------------------------------
 
 import express from 'express';
-import http from 'http';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import path from 'path';
 import passport from './googleService.js';
 import session from 'express-session';
-import { sequelize } from './models/index.js';
 import authRouter from './routes/auth-route.js';
-import enemiesRouter from './routes/enemies.js'
-import MongoDBController from './controllers/mongoDBcontroller.js';
-
-// Configuración de rutas y directorios
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import tokenRouter from './routes/verify-token-routes.js';
 
 dotenv.config();
 
@@ -68,31 +59,9 @@ function isAdmin() {
 }               
 
 app.use('/auth', authRouter);
+app.use('/token', tokenRouter);
 
-// Sincronización de las bases de datos
-Promise.all([
-  sequelize.sync(),
-  MongoDBController.connect()
-])
-.then(() => {
-  console.log('✅ Bases de datos SQL y MongoDB sincronizadas correctamente.');
-  app.listen(PORT, () => {
-    console.log(`🚀 Auth service funcionando en http://localhost:${PORT}`);
-  });
-})
-.catch(err => {
-  console.error('❌ Error sincronizando las bases de datos:', err);
-  process.exit(1);
+app.listen(PORT, () => {
+  console.log(`🚀 Auth service funcionando en http://localhost:${PORT}`);
 });
 
-// Manejo de errores no capturados
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('❗ Promesa no manejada:', reason);
-  // Aplicación específica de manejo de errores
-});
-
-process.on('uncaughtException', (error) => {
-  console.error('❗ Excepción no capturada:', error);
-  // Aplicación específica de manejo de errores
-  process.exit(1);
-});

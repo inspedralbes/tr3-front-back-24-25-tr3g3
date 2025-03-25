@@ -1,7 +1,8 @@
 // auth-route.js
 import express from 'express';
 import passport from 'passport';
-import { createUser, getUserByEmail, changePassword } from '../controllers/userController.js';
+import crypto from 'crypto';
+import { UserRepository } from './repositories/userRepository.js';
 import { createToken, verifyToken, createPasswordResetToken } from '../controllers/verifyTokenController.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../emailService.js';
 import { generateJWToken, verifyTokenAdmin, verifyTokenUser } from '../controllers/authTokenController.js';
@@ -85,7 +86,7 @@ router.post('/send-verification-email', async (req, res) => {
     if (!email) return res.status(400).json({ message: "El correo electrónico es requerido." });
 
     try {
-        const existingUser = await getUserByEmail(email);
+        const existingUser = await UserRepository.findByEmail(email);
         if (existingUser) return res.status(400).json({ message: "El usuario ya existe." });
 
         const token = await createToken(email, username, password);
@@ -105,7 +106,7 @@ router.post('/send-password-reset-email', async (req, res) => {
     if (!email) return res.status(400).json({ message: "El correo electrónico es requerido." });
 
     try {
-        const user = await getUserByEmail(email);
+        const user = await UserRepository.findByEmail(email);
         if (!user) return res.status(400).json({ message: "No se encontró un usuario con ese correo electrónico." });
 
         const token = await createPasswordResetToken(email);
@@ -127,10 +128,10 @@ router.post('/verify-email/:token', async (req, res) => {
         const verificationData = await verifyToken(token);
         if (!verificationData) return res.status(400).json({ message: "Token inválido o expirado." });
 
-        const existingUser = await getUserByEmail(verificationData.email);
+        const existingUser = await UserRepository.findByEmail(verificationData.email);
         if (existingUser) return res.status(400).json({ message: "El usuario ya existe." });
 
-        await createUser({ body: verificationData }, res);
+        await UserRepository.createUser({ body: verificationData }, res);
     } catch (error) {
         console.error('Error al verificar el token:', error);
         res.status(500).json({ message: "Error al verificar el token." });
@@ -148,12 +149,10 @@ router.post('/reset-password/:token', async (req, res) => {
         const tokenData = await verifyToken(token);
         if (!tokenData) return res.status(400).json({ message: "Token inválido o expirado." });
 
-        const user = await getUserByEmail(tokenData.email);
+        const user = await UserRepository.findByEmail(tokenData.email);
         if (!user) return res.status(404).json({ message: "Usuario no encontrado." });
 
-        req.params.id = user.id;
-        req.body.password = newPassword;
-        await changePassword(req, res);
+        await UserRepository.changePassword(user.id, newPassword);
     } catch (error) {
         console.error('Error al restablecer la contraseña:', error);
         res.status(500).json({ message: "Error al restablecer la contraseña." });

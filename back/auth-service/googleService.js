@@ -4,20 +4,9 @@ import { Strategy as LocalStrategy } from 'passport-local';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import * as userController from './controllers/userController.js';
+import { UserRepository } from './repositories/userRepository.js';
 
 dotenv.config();
-
-const SQL_SERVICE_URL = process.env.SQL_SERVICE_URL;
-
-async function findUserByMail(email) {
-  const response = await fetch(`${SQL_SERVICE_URL}/user/email/${email}`);
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Error en la solicitud');
-  }
-  return response.json();
-}
 
 /**
  * Estrategia de autenticación de Google OAuth.
@@ -41,29 +30,19 @@ passport.use(
         const email = profile.emails[0].value;
 
         // Busca un usuario existente por email usando el controlador
-        let user = await findUserByMail(email);
-
+        let user = await UserRepository.findByEmail(email);
+        
         if (!user) {
           // Si el usuario no existe, crea uno nuevo con un password aleatorio
           const randomPassword = crypto.randomBytes(16).toString('hex');
-          // Crea el usuario y obtiene el objeto resultante
-          const response = await fetch(`${SQL_SERVICE_URL}/user`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: email,
-              username: profile.displayName,
-              password: randomPassword
-            })
-          });
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          user = await response.json();
+          user = await UserRepository.createUser({
+            email: email,
+            username: profile.displayName,
+            password: randomPassword
+          });
         }
+
         // Elimina la propiedad password del objeto usuario por seguridad
         delete user.password;
         return done(null, user);
@@ -87,7 +66,7 @@ passport.use(
     async (email, password, done) => {
       try {
         // Busca el usuario por email utilizando el controlador
-        const user = await findUserByMail(email);
+        const user = await UserRepository.findByEmail(email);
         if (!user) {
           return done(null, false, { message: 'Usuario no encontrado' });
         }
