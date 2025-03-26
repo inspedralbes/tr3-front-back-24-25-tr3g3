@@ -8,7 +8,7 @@ export function useAuth() {
     const route = useRoute();
 
     const config = useRuntimeConfig();
-    const BASE_URL = config.public.API_BASE_URL + '/auth';
+    const BASE_URL = config.public.API_AUTH_URL + '/auth';
 
     const login = async (email, password) => {
         try {
@@ -28,18 +28,23 @@ export function useAuth() {
     };
 
     const processUserFromQuery = () => {
-        const userData = route.query.user;
+        const userParam = route.query.user
+        const tokenParam = route.query.token
 
-        if (!userData) {
+        console.log("Procesando datos de usuario desde la consulta...");
+        console.log("Datos de usuario:", userParam);
+        console.log("Token de verificación:", tokenParam);
+
+        if (!userParam) {
             router.push("/auth/login");
             return;
         }
 
         try {
-            const parsedUser = JSON.parse(userData);
+            const parsedUser = JSON.parse(userParam);
             authStore.setUser(parsedUser);
             authStore.setIsAuthenticated(true);
-            router.push("/");
+            router.push("/dashboard");
         } catch (error) {
             console.error("Error al analizar los datos del usuario:", error);
             router.push("/auth/login");

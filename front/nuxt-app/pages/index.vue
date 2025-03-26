@@ -23,6 +23,6 @@ import { useAuthStore } from '@/stores/authStore';
 
 const authStore = useAuthStore();
 
-console.log(authStore.isAuthenticated);
+console.log('isAuthenticated', authStore.isAuthenticated);
 
 </script>

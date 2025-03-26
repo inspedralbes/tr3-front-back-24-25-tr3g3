@@ -105,6 +105,10 @@
 <script setup>
 import { ref } from 'vue';
 import { useAuth } from "@/services/useAuth";
+import { useAuthStore } from "@/stores/authStore";
+
+const router = useRouter();
+const authStore = useAuthStore();
 
 const { login, loginGoogle } = useAuth();
 
@@ -122,7 +126,19 @@ const handleLogin = async () => {
   isLoading.value = true;
   try {
     const response = await login(email.value, password.value);
-    window.location.href = response.redirectUrl;
+
+    if(response.user.rol === 'cliente'){
+      // notificar que no tiene permisos
+      console.log('No tienes permisos para acceder a esta sección');
+      isLoading.value = false;
+      return
+    }
+
+    authStore.setUser(response.user);
+    authStore.setToken(response.token);
+    authStore.setIsAuthenticated(true);
+
+    router.push("/dashboard");
   } catch (error) {
     console.error("Error en el inicio de sesión:", error);
   } finally {

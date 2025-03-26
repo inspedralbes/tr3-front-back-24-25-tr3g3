@@ -2,7 +2,7 @@
 import express from 'express';
 import passport from 'passport';
 import crypto from 'crypto';
-import { UserRepository } from './repositories/userRepository.js';
+import { UserRepository } from '../repositories/userRepository.js';
 import { createToken, verifyToken, createPasswordResetToken } from '../controllers/verifyTokenController.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../emailService.js';
 import { generateJWToken, verifyTokenAdmin, verifyTokenUser } from '../controllers/authTokenController.js';
@@ -30,7 +30,7 @@ router.post('/login', (req, res, next) => {
                     username: user.username
                 };
                 
-                const token = generateToken(tokenData, rol);
+                const token = generateJWToken(tokenData, rol);
                 
                 // Enviar el token al cliente
                 res.status(200).json({ 
@@ -64,7 +64,7 @@ router.get('/callback', passport.authenticate('google', { failureRedirect: '/' }
         const token = generateJWToken(tokenData, rol);
 
         // Redirige al frontend con el token como parámetro de URL
-        res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}?token=${token}`);
+        res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/callback?user=${encodeURIComponent(JSON.stringify(req.user))}&token=${token}`);
     } catch (error) {
         console.error('Error al generar token:', error);
         res.redirect(`${process.env.DOMAIN_URL}:${process.env.WEB_PORT}/auth/error?message=${encodeURIComponent('Error al generar token')}`);

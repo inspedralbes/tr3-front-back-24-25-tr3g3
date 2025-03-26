@@ -6,6 +6,7 @@
 
 <script setup>
 import { onMounted } from "vue";
+import { useAuth } from "@/services/useAuth";
 
 const { processUserFromQuery } = useAuth();
 

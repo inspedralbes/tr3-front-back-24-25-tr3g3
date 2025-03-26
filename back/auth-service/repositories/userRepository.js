@@ -6,12 +6,25 @@ const SQL_SERVICE_URL = process.env.SQL_SERVICE_URL;
 
 export class UserRepository {
   static async findByEmail(email) {
-    const response = await fetch(`${SQL_SERVICE_URL}/user/email/${email}`);
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error en la solicitud');
+    try {
+      const response = await fetch(`${SQL_SERVICE_URL}/user/email/${email}`);
+      
+      // Si la respuesta no es exitosa pero no es un 404, lanza un error
+      if (!response.ok) {
+        if (response.status === 404) {
+          // Si es un 404, significa que no se encontró el usuario
+          return null;
+        }
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error en la solicitud');
+      }
+      
+      return response.json();
+    } catch (error) {
+      // Maneja otros errores de red o de parsing
+      console.error('Error en findByEmail:', error);
+      return null;
     }
-    return response.json();
   }
 
   static async createUser(userData) {

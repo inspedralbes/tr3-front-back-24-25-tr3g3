@@ -42,4 +42,4 @@ function verifyToken(secrets) {
 const verifyTokenAdmin = verifyToken([JWT_SECRET_ADMIN]);
 const verifyTokenUser = verifyToken([JWT_SECRET_ADMIN, JWT_SECRET_USER]);
 
-module.exports = { generateJWToken, verifyTokenAdmin, verifyTokenUser };
+export { generateJWToken, verifyTokenAdmin, verifyTokenUser };
