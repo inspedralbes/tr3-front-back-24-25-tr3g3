@@ -87,7 +87,7 @@ const authStore = useAuthStore();
 const route = useRoute();
 const config = useRuntimeConfig();
 
-const logoutLink = `${config.public.API_BASE_URL}/auth/logout`;
+const logoutLink = `${config.public.API_AUTH_URL}/auth/logout`;
 
 const isLogged = computed(() => authStore.isAuthenticated);
 

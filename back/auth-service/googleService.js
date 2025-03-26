@@ -60,28 +60,21 @@ passport.use(
     },
     async (email, password, done) => {
       try {
-        console.log('Email:', email);
         // Busca el usuario por email utilizando el controlador
         const user = await UserRepository.findByEmail(email);
-        console.log('Usuario:', user);
         if (!user) {
           return done(null, false, { message: 'Usuario no encontrado' });
         }
-        console.log('Usuario encontrado');
         // Compara la contraseña proporcionada con la almacenada
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log('Contraseña:', isMatch);
         if (!isMatch) {
-          console.log('Contraseña incorrecta');
           return done(null, false, { message: 'Contraseña incorrecta' });
         }
-        console.log('Contraseña correcta');
         // Elimina la propiedad password por seguridad
         const userObj = { ...user };
         if(userObj.password) {
           delete userObj.password;
         }
-        console.log('Usuario autenticado:', userObj);
         return done(null, userObj);
       } catch (error) {
         return done(error, null);
