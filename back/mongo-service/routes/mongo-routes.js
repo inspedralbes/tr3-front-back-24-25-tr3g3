@@ -25,6 +25,22 @@ router.get('/unity/enemies', async (req, res) => {
   }
 });
 
+router.get('/enemies/boss', async (req, res) => {
+  try {
+    // Llamamos al método getBOSS para obtener el enemigo tipo 'boss'
+    const bossEnemy = await MongoDBController.getBOSS();
+
+    if (!bossEnemy) {
+      return res.status(404).json({ error: 'No se encontró enemigo tipo boss' });
+    }
+
+    // Devolver solo el array de stats
+    res.json(bossEnemy.stats);
+  } catch (error) {
+    res.status(500).json({ error: 'Error obteniendo el enemigo tipo boss' });
+  }
+});
+
 // ================== RUTAS PARA ENEMIGOS ==================
 router.route('/enemies')
   .get(async (req, res) => {
@@ -73,6 +89,23 @@ router.route('/enemies/:id')
       res.status(400).json({ error: 'Error eliminando enemigo' });
     }
   });
+
+// ================== NUEVA RUTA PARA BUSCAR POR BOSS ==================
+router.get('/enemies/boss', async (req, res) => {
+  const { boss } = req.query; // Parámetro de consulta para filtrar enemigos por 'boss'
+
+  if (boss === undefined) {
+    return res.status(400).json({ error: 'El parámetro "boss" es requerido' });
+  }
+
+  try {
+    const isBoss = boss === 'true'; // Convertimos el parámetro a un valor booleano
+    const enemies = await MongoDBController.getEnemiesByBoss(isBoss);
+    res.json(enemies);
+  } catch (error) {
+    res.status(500).json({ error: 'Error obteniendo enemigos por boss' });
+  }
+});
 
 // ================== RUTAS PARA DIFICULTADES ==================
 router.route('/difficulties')
