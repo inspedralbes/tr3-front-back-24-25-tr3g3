@@ -5,12 +5,12 @@ import {
   getPlayers,
   getPlayerById,
   getPlayerByEmail,
-  updatePlayerStats,
+  updatePlayer, // Usar la función updatePlayer para actualizar cualquier estadística
 } from '../controllers/playerController.js';
 
 const router = express.Router();
 
-
+// Crear un nuevo jugador
 router.post('/', async (req, res) => {
   try {
     const { email, gold, timePlayed, health, damage, attackSpeed } = req.body;
@@ -21,6 +21,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Obtener todos los jugadores
 router.get('/', async (req, res) => {
   try {
     const players = await getPlayers(); 
@@ -35,8 +36,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Error obteniendo jugadores', error: error.message });
   }
 });
-
-
 
 // Obtener jugador por ID
 router.get('/:id', async (req, res) => {
@@ -68,8 +67,8 @@ router.get('/email/:email', async (req, res) => {
 router.put('/:id/stats', async (req, res) => {
   try {
     const { gold, timePlayed, health, damage, attackSpeed } = req.body;
-    const updatedStats = await updatePlayerStats(req.params.id, gold, timePlayed, health, damage, attackSpeed);
-    res.status(200).json({ message: 'Estadísticas del jugador actualizadas exitosamente', updatedStats });
+    const updatedPlayer = await updatePlayer(req.params.id, gold, timePlayed, health, damage, attackSpeed);
+    res.status(200).json({ message: 'Estadísticas del jugador actualizadas exitosamente', updatedPlayer });
   } catch (error) {
     res.status(500).json({ message: 'Error al actualizar las estadísticas del jugador', error: error.message });
   }
