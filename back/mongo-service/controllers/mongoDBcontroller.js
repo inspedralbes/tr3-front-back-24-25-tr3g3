@@ -63,7 +63,6 @@ class MongoDBController {
   }
 
   static async getAllEnemies() {
-    console.log('Database:', this.db.databaseName);
     return await this.db.collection('enemies').find().toArray();
   }
 

@@ -30,11 +30,7 @@ export function useAuth() {
     const processUserFromQuery = () => {
         const userParam = route.query.user
         const tokenParam = route.query.token
-
-        console.log("Procesando datos de usuario desde la consulta...");
-        console.log("Datos de usuario:", userParam);
-        console.log("Token de verificación:", tokenParam);
-
+        
         if (!userParam) {
             router.push("/auth/login");
             return;
@@ -43,6 +39,7 @@ export function useAuth() {
         try {
             const parsedUser = JSON.parse(userParam);
             authStore.setUser(parsedUser);
+            authStore.setToken(tokenParam);
             authStore.setIsAuthenticated(true);
             router.push("/dashboard");
         } catch (error) {

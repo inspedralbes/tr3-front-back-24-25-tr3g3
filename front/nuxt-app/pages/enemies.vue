@@ -31,7 +31,7 @@
                         </div>
                         <div>
                             <p class="font-medium">{{ enemy.name }}</p>
-                            <p class="text-sm text-gray-600">Nivel {{ enemy.level }}</p>
+                            <p class="text-sm text-gray-600">Tipo {{ enemy.type }}</p>
                         </div>
                     </div>
                 </div>
@@ -53,10 +53,10 @@
                                 class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-300 focus:outline-none transition" />
                         </div>
 
-                        <!-- Nivel -->
+                        <!-- Tipo -->
                         <div>
-                            <label class="block text-sm font-medium mb-1 text-gray-700">Nivel</label>
-                            <input v-model.number="selectedEnemy.level" type="number" min="1"
+                            <label class="block text-sm font-medium mb-1 text-gray-700">Tipo</label>
+                            <input v-model="selectedEnemy.type" type="text"
                                 class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-300 focus:outline-none transition" />
                         </div>
                     </div>
@@ -74,8 +74,8 @@
                                     {{ getAttributeUnit(key) }}
                                 </span>
                             </div>
-                            <input v-model.number="selectedEnemy.stats[key]" type="range"
-                                :min="getAttributeMin(key)" :max="getAttributeMax(key)" :step="getAttributeStep(key)"
+                            <input v-model.number="selectedEnemy.stats[key]" type="range" :min="getAttributeMin(key)"
+                                :max="getAttributeMax(key)" :step="getAttributeStep(key)"
                                 class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
                         </div>
                     </div>
@@ -106,117 +106,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useConfigEnemies } from '@/services/useConfigEnemies';
+
+const { getEnemies, updateEnemie } = useConfigEnemies();
 
 // Lista de enemigos con atributos dinámicos
-const enemies = ref([
-    {
-        name: 'Grunt',
-        level: 1,
-        img: '/profile-icon.jpg',
-        stats: {
-            shootingDistance: 2,
-            maxHealth: 1,
-            enemyDamage: 2
-        }
-    },
-    {
-        name: 'Lobo',
-        level: 2,
-        img: '/profile-icon.jpg',
-        stats: {
-            damage: 2,
-            detectionRange: 3.0,
-            maxHealth: 1,
-            moveSpeed: 2.0
-        }
-    },
-    {
-        name: 'Ogro',
-        level: 4,
-        img: '/profile-icon.jpg',
-        stats: {
-            maxHealth: 6,
-            damage: 3,
-            attackCooldown: 4.0,
-            detectionRange: 1.8
-        }
-    },
-    {
-        name: 'Fantasma',
-        level: 3,
-        img: '/profile-icon.jpg',
-        stats: {
-            moveSpeed: 4.0,
-            detectionRange: 6.0,
-            maxHealth: 1
-        }
-    },
-    {
-        name: 'Caballo',
-        level: 5,
-        img: '/profile-icon.jpg',
-        stats: {
-            maxHealth: 6,
-            damage: 3,
-            moveSpeed: 2.0,
-            chargeDistance: 1.1
-        }
-    },
-    {
-        name: 'Grunt',
-        level: 1,
-        img: '/profile-icon.jpg',
-        stats: {
-            shootingDistance: 2,
-            maxHealth: 1,
-            enemyDamage: 2
-        }
-    },
-    {
-        name: 'Lobo',
-        level: 2,
-        img: '/profile-icon.jpg',
-        stats: {
-            damage: 2,
-            detectionRange: 3.0,
-            maxHealth: 1,
-            moveSpeed: 2.0
-        }
-    },
-    {
-        name: 'Ogro',
-        level: 4,
-        img: '/profile-icon.jpg',
-        stats: {
-            maxHealth: 6,
-            damage: 3,
-            attackCooldown: 4.0,
-            detectionRange: 1.8
-        }
-    },
-    {
-        name: 'Fantasma',
-        level: 3,
-        img: '/profile-icon.jpg',
-        stats: {
-            moveSpeed: 4.0,
-            detectionRange: 6.0,
-            maxHealth: 1
-        }
-    },
-    {
-        name: 'Caballo',
-        level: 5,
-        img: '/profile-icon.jpg',
-        stats: {
-            maxHealth: 6,
-            damage: 3,
-            moveSpeed: 2.0,
-            chargeDistance: 1.1
-        }
-    },
-]);
+const enemies = ref([]);
 
 // Índice del enemigo seleccionado
 const selectedEnemyIndex = ref(null);
@@ -229,8 +125,11 @@ const searchQuery = ref('');
 
 // Configuración de atributos (min, max, step, unidad, icono)
 const attributeConfig = {
-    maxHealth: { min: 1, max: 20, step: 1, unit: 'HP', icon: '❤️' },
-    damage: { min: 1, max: 10, step: 1, unit: 'DMG', icon: '⚔️' },
+    health: { min: 1, max: 500, step: 1, unit: 'HP', icon: '❤️' },
+    maxHealth: { min: 1, max: 500, step: 1, unit: 'HP', icon: '❤️' },
+    damage: { min: 1, max: 100, step: 1, unit: 'DMG', icon: '⚔️' },
+    danoColumna: { min: 1, max: 100, step: 1, unit: 'DMG', icon: '⚔️' },
+    danoFuegoBoca: { min: 1, max: 100, step: 1, unit: 'DMG', icon: '⚔️' },
     enemyDamage: { min: 1, max: 10, step: 1, unit: 'DMG', icon: '⚔️' },
     moveSpeed: { min: 0.5, max: 10, step: 0.1, unit: 'units/s', icon: '🏃' },
     detectionRange: { min: 0.5, max: 10, step: 0.1, unit: 'units', icon: '👁️' },
@@ -263,6 +162,17 @@ function selectEnemy(index) {
 function saveEnemyChanges() {
     if (selectedEnemyIndex.value !== null) {
         enemies.value[selectedEnemyIndex.value] = JSON.parse(JSON.stringify(selectedEnemy.value));
+
+        // Actualizar enemigo en la base de datos si ha cambiado
+        if (JSON.stringify(enemies.value[selectedEnemyIndex.value]) !== JSON.stringify(selectedEnemy.value)) {
+            try {
+                updateEnemie(selectedEnemy.value);
+                console.log(selectedEnemy.value);
+            } catch (error) {
+                console.error("No se pudieron guardar los cambios", error);
+            }
+        }
+
         // Mostrar mensaje de éxito
         const toast = document.createElement('div');
         toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg';
@@ -272,15 +182,17 @@ function saveEnemyChanges() {
             document.body.removeChild(toast);
         }, 3000);
 
-        console.log(selectedEnemy.value);
     }
 }
 
 // Función para formatear nombres de atributos
 function formatAttributeName(key) {
     const nameMap = {
+        health: 'Salud Máxima',
         maxHealth: 'Salud Máxima',
         damage: 'Daño',
+        danoColumna: 'Daño Columna',
+        danoFuegoBoca: 'Daño Fuego Boca',
         enemyDamage: 'Daño',
         moveSpeed: 'Velocidad',
         detectionRange: 'Rango de Detección',
@@ -316,6 +228,14 @@ function getAttributeUnit(key) {
 function getAttributeIcon(key) {
     return attributeConfig[key]?.icon || '🔷';
 }
+
+onMounted(async () => {
+    try {
+        enemies.value = await getEnemies();
+    } catch (error) {
+        console.error("No se pudieron cargar los enemigos", error);
+    }
+});
 </script>
 
 <style scoped></style>
