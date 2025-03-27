@@ -29,9 +29,35 @@ export function useConfigEnemies() {
             console.error("Error al obtener los enemigos:", error);
             throw error;
         }
-    };    
+    };
+
+    const updateEnemie = async (enemie) => {
+        const token = authStore.token; // Obtiene el token del store
+    
+        if (!token) {
+            console.error("No hay token disponible");
+            throw new Error("Token no disponible");
+        }
+
+        // eliminar la propiedad _id
+        delete enemie._id;
+        
+        try {
+            return await $fetch(`${BASE_URL}/enemies/${enemie.id}`, {
+                method: 'PUT',
+                headers: {
+                    Authorization: `Bearer ${token}` // Añade el token a los headers
+                },
+                body: JSON.stringify(enemie)
+            });
+        } catch (error) {
+            console.error("Error al actualizar el enemigo:", error);
+            throw error;
+        }
+    }
 
     return {
         getEnemies,
+        updateEnemie,
     };
 }

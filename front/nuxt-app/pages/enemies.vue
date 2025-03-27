@@ -31,7 +31,7 @@
                         </div>
                         <div>
                             <p class="font-medium">{{ enemy.name }}</p>
-                            <p class="text-sm text-gray-600">Nivel {{ enemy.level }}</p>
+                            <p class="text-sm text-gray-600">Tipo {{ enemy.type }}</p>
                         </div>
                     </div>
                 </div>
@@ -53,10 +53,10 @@
                                 class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-300 focus:outline-none transition" />
                         </div>
 
-                        <!-- Nivel -->
+                        <!-- Tipo -->
                         <div>
-                            <label class="block text-sm font-medium mb-1 text-gray-700">Nivel</label>
-                            <input v-model.number="selectedEnemy.level" type="number" min="1"
+                            <label class="block text-sm font-medium mb-1 text-gray-700">Tipo</label>
+                            <input v-model="selectedEnemy.type" type="text"
                                 class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-300 focus:outline-none transition" />
                         </div>
                     </div>
@@ -74,8 +74,8 @@
                                     {{ getAttributeUnit(key) }}
                                 </span>
                             </div>
-                            <input v-model.number="selectedEnemy.stats[key]" type="range"
-                                :min="getAttributeMin(key)" :max="getAttributeMax(key)" :step="getAttributeStep(key)"
+                            <input v-model.number="selectedEnemy.stats[key]" type="range" :min="getAttributeMin(key)"
+                                :max="getAttributeMax(key)" :step="getAttributeStep(key)"
                                 class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
                         </div>
                     </div>
@@ -106,10 +106,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted  } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useConfigEnemies } from '@/services/useConfigEnemies';
 
-const { getEnemies } = useConfigEnemies();
+const { getEnemies, updateEnemie } = useConfigEnemies();
 
 // Lista de enemigos con atributos dinámicos
 const enemies = ref([]);
@@ -125,9 +125,9 @@ const searchQuery = ref('');
 
 // Configuración de atributos (min, max, step, unidad, icono)
 const attributeConfig = {
-    health: { min: 1, max: 20, step: 1, unit: 'HP', icon: '❤️' },
-    maxHealth: { min: 1, max: 20, step: 1, unit: 'HP', icon: '❤️' },
-    damage: { min: 1, max: 10, step: 1, unit: 'DMG', icon: '⚔️' },
+    health: { min: 1, max: 500, step: 1, unit: 'HP', icon: '❤️' },
+    maxHealth: { min: 1, max: 500, step: 1, unit: 'HP', icon: '❤️' },
+    damage: { min: 1, max: 100, step: 1, unit: 'DMG', icon: '⚔️' },
     danoColumna: { min: 1, max: 100, step: 1, unit: 'DMG', icon: '⚔️' },
     danoFuegoBoca: { min: 1, max: 100, step: 1, unit: 'DMG', icon: '⚔️' },
     enemyDamage: { min: 1, max: 10, step: 1, unit: 'DMG', icon: '⚔️' },
@@ -162,6 +162,17 @@ function selectEnemy(index) {
 function saveEnemyChanges() {
     if (selectedEnemyIndex.value !== null) {
         enemies.value[selectedEnemyIndex.value] = JSON.parse(JSON.stringify(selectedEnemy.value));
+
+        // Actualizar enemigo en la base de datos si ha cambiado
+        if (JSON.stringify(enemies.value[selectedEnemyIndex.value]) !== JSON.stringify(selectedEnemy.value)) {
+            try {
+                updateEnemie(selectedEnemy.value);
+                console.log(selectedEnemy.value);
+            } catch (error) {
+                console.error("No se pudieron guardar los cambios", error);
+            }
+        }
+
         // Mostrar mensaje de éxito
         const toast = document.createElement('div');
         toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg';
@@ -171,7 +182,6 @@ function saveEnemyChanges() {
             document.body.removeChild(toast);
         }, 3000);
 
-        console.log(selectedEnemy.value);
     }
 }
 
@@ -220,12 +230,11 @@ function getAttributeIcon(key) {
 }
 
 onMounted(async () => {
-  try {
-    enemies.value = await getEnemies();
-    console.log(enemies.value);
-  } catch (error) {
-    console.error("No se pudieron cargar los enemigos", error);
-  }
+    try {
+        enemies.value = await getEnemies();
+    } catch (error) {
+        console.error("No se pudieron cargar los enemigos", error);
+    }
 });
 </script>
 
