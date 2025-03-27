@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { User } from "../models/index.js";
+import { User, Player } from "../models/index.js";
 
 const listAdmins = [
   'a20davsalsos@inspedralbes.cat',
@@ -19,9 +19,17 @@ export const createUser = async (email, username, password) => {
     email, 
     username, 
     password: hashedPassword, 
-    rol,
+    rol
+  });
+
+  // Crear atributos de jugador por defecto
+  await Player.create({
+    email,
     gold: 0,
-    playTime: 0
+    timePlayed: 0,
+    health: 20,
+    damage: 10,
+    attackSpeed: 1
   });
 
   const userResponse = newUser.toJSON();

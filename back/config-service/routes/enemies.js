@@ -111,4 +111,32 @@ router.get('/enemies/boss', verifyAdmin, async (req, res) => {
     }
 });
 
+// Nuevas rutas para dificultades
+router.get('/difficulties', async (req, res) => {
+    try {
+        const difficulties = await makeRequest('GET', '/difficulties');
+        res.status(200).json(difficulties);
+    } catch (error) {
+        res.status(500).json({ message: 'Error obteniendo dificultades', error: error.message });
+    }
+});
+
+router.get('/difficulties/:id', async (req, res) => {
+    try {
+        const difficulty = await makeRequest('GET', `/difficulties/${req.params.id}`);
+        res.status(200).json(difficulty);
+    } catch (error) {
+        res.status(500).json({ message: 'Error obteniendo dificultad', error: error.message });
+    }
+});
+
+router.put('/difficulties/:id/quantities', verifyAdmin, async (req, res) => {
+    try {
+        const result = await makeRequest('PUT', `/difficulties/${req.params.id}/quantities`, req.body);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: 'Error actualizando cantidades', error: error.message });
+    }
+});
+
 export default router;

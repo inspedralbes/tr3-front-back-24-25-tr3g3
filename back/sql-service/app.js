@@ -16,7 +16,7 @@ app.use(express.json());
 
 // Rutas
 app.use("/user", userRoutes);
-app.use("/player", playerRoutes);
+app.use("/players", playerRoutes);
 
 // Función para iniciar el servidor solo si la DB está lista
 async function startServer() {

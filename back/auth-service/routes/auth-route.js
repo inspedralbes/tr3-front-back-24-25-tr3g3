@@ -45,6 +45,47 @@ router.post('/login', (req, res, next) => {
     })(req, res, next);
 });
 
+router.post('/unity/register', async (req, res) => {
+    try {
+        const { email, username, password } = req.body;
+        
+        // Validación básica de campos
+        if (!email || !username || !password) {
+            return res.status(400).json({ error: 'Faltan campos requeridos' });
+        }
+
+        // Crear el objeto exacto que la API espera
+        const userData = {
+            email,
+            username,
+            password
+        };
+
+        // Conexión con API externa
+        const respuestaAPI = await fetch(process.env.UNITY_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        });
+
+        const datos = await respuestaAPI.json();
+
+        if (!respuestaAPI.ok) {
+            return res.status(respuestaAPI.status).json(datos);
+        }
+
+        res.status(201).json(datos);
+    } catch (error) {
+        console.error('Error en el registro:', error);
+        res.status(500).json({ 
+            error: 'Error interno del servidor',
+            detalle: error.message 
+        });
+    }
+});
+
 // LOGIN CON GOOGLE
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
