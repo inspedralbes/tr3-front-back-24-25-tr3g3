@@ -159,29 +159,28 @@ function selectEnemy(index) {
 }
 
 // Función para guardar los cambios del enemigo
-function saveEnemyChanges() {
+async function saveEnemyChanges() {
     if (selectedEnemyIndex.value !== null) {
+        // Clonar el objeto para evitar referencias compartidas
         enemies.value[selectedEnemyIndex.value] = JSON.parse(JSON.stringify(selectedEnemy.value));
 
-        // Actualizar enemigo en la base de datos si ha cambiado
-        if (JSON.stringify(enemies.value[selectedEnemyIndex.value]) !== JSON.stringify(selectedEnemy.value)) {
-            try {
-                updateEnemie(selectedEnemy.value);
-                console.log(selectedEnemy.value);
-            } catch (error) {
-                console.error("No se pudieron guardar los cambios", error);
-            }
+        try {
+            // Esperar la respuesta de la actualización en la base de datos
+            await updateEnemie(selectedEnemy.value);
+
+            // Mostrar mensaje de éxito
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg';
+            toast.textContent = 'Cambios guardados correctamente';
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 3000);
+
+
+        } catch (error) {
+            console.error("No se pudieron guardar los cambios", error);
         }
-
-        // Mostrar mensaje de éxito
-        const toast = document.createElement('div');
-        toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg';
-        toast.textContent = 'Cambios guardados correctamente';
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            document.body.removeChild(toast);
-        }, 3000);
-
     }
 }
 
