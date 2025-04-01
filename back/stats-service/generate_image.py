@@ -1,55 +1,110 @@
 import json
 import sys
 import matplotlib.pyplot as plt
-import numpy as np
 from datetime import datetime
 
 def generate_image(data_path, output_path):
     with open(data_path) as f:
         data = json.load(f)
 
-    plt.figure(figsize=(12, 6))
+    # Preparar los tipos de enemigos y sus colores
+    enemigos = ["ghost_killed", "grunt_killed", "horse_killed", "ogre_killed", "wolf_killed", "boss_killed"]
+    colores = {
+        "ghost_killed": "#1f77b4",  # Azul
+        "grunt_killed": "#ff7f0e",  # Naranja
+        "horse_killed": "#2ca02c",  # Verde
+        "ogre_killed": "#d62728",   # Rojo
+        "wolf_killed": "#9467bd",   # Púrpura
+        "boss_killed": "#8c564b"    # Marrón
+    }
+    
+    # Verificar si los datos incluyen email y/o fecha
+    has_email = any("email" in registro for registro in data)
+    has_fecha = any("fecha" in registro for registro in data)
 
-    # Verificar si los datos incluyen email, fecha o ambos
-    has_email = "email" in data[0]
-    has_fecha = "fecha" in data[0]
+    # Inicializar el diccionario para sumar enemigos
+    suma_enemigos = {enemigo: 0 for enemigo in enemigos}
 
     if has_email and has_fecha:
-        # Caso: Email y Fecha - Sumar enemigos matados en una fecha específica para un usuario
-        email = data[0]["email"]
-        fecha = data[0]["fecha"]
-        total_kills = sum(
-            sum(d["estadisticas"].values()) for d in data if d["email"] == email and d["fecha"] == fecha
-        )
-
-        plt.bar(["Total Enemigos Matados"], [total_kills], color="blue")
-        plt.title(f"Estadísticas de {email} el {fecha}")
-        plt.ylabel("Cantidad de Enemigos Matados")
-        plt.xlabel("Fecha")
+        # Caso: Email y Fecha
+        # Si hay múltiples emails/fechas, tomamos el email y fecha del primer registro como filtro
+        email_filtro = data[0]["email"] if "email" in data[0] else None
+        fecha_filtro = data[0]["fecha"] if "fecha" in data[0] else None
+        
+        # Sumar estadísticas para todos los registros que coincidan con el filtro
+        for registro in data:
+            if (registro.get("email") == email_filtro and 
+                registro.get("fecha") == fecha_filtro and 
+                "estadisticas" in registro):
+                for enemigo in enemigos:
+                    if enemigo in registro["estadisticas"]:
+                        suma_enemigos[enemigo] += registro["estadisticas"][enemigo]
+        
+        # Formatear la fecha para el título si está disponible
+        fecha_formateada = fecha_filtro
+        if fecha_filtro:
+            try:
+                fecha_obj = datetime.fromisoformat(fecha_filtro.replace('Z', '+00:00'))
+                fecha_formateada = fecha_obj.strftime("%d/%m/%Y")
+            except:
+                pass  # Si hay error, mantener el formato original
+        
+        plt.title(f"Estadísticas de {email_filtro} el {fecha_formateada}")
 
     elif has_email:
-        # Caso: Solo Email - Mostrar enemigos totales matados por un usuario
-        email = data[0]["email"]
-        total_kills = sum(sum(d["estadisticas"].values()) for d in data if d["email"] == email)
-
-        plt.bar(["Total Enemigos Matados"], [total_kills], color="green")
-        plt.title(f"Estadísticas Totales de {email}")
-        plt.ylabel("Cantidad de Enemigos Matados")
-        plt.xlabel("Usuario")
+        # Caso: Solo Email
+        email_filtro = data[0]["email"] if "email" in data[0] else None
+        
+        # Sumar estadísticas para todos los registros con el mismo email
+        for registro in data:
+            if registro.get("email") == email_filtro and "estadisticas" in registro:
+                for enemigo in enemigos:
+                    if enemigo in registro["estadisticas"]:
+                        suma_enemigos[enemigo] += registro["estadisticas"][enemigo]
+        
+        plt.title(f"Estadísticas Totales de {email_filtro}")
 
     elif has_fecha:
-        # Caso: Solo Fecha - Sumar enemigos matados por todos los usuarios en una fecha específica
-        fecha = data[0]["fecha"]
-        total_kills = sum(sum(d["estadisticas"].values()) for d in data if d["fecha"] == fecha)
-
-        plt.bar(["Total Enemigos Matados"], [total_kills], color="orange")
-        plt.title(f"Estadísticas Totales el {fecha}")
-        plt.ylabel("Cantidad de Enemigos Matados")
-        plt.xlabel("Fecha")
+        # Caso: Solo Fecha
+        fecha_filtro = data[0]["fecha"] if "fecha" in data[0] else None
+        
+        # Sumar estadísticas para todos los registros con la misma fecha
+        for registro in data:
+            if registro.get("fecha") == fecha_filtro and "estadisticas" in registro:
+                for enemigo in enemigos:
+                    if enemigo in registro["estadisticas"]:
+                        suma_enemigos[enemigo] += registro["estadisticas"][enemigo]
+        
+        # Formatear la fecha para el título
+        fecha_formateada = fecha_filtro
+        if fecha_filtro:
+            try:
+                fecha_obj = datetime.fromisoformat(fecha_filtro.replace('Z', '+00:00'))
+                fecha_formateada = fecha_obj.strftime("%d/%m/%Y")
+            except:
+                pass  # Si hay error, mantener el formato original
+        
+        plt.title(f"Estadísticas Totales el {fecha_formateada}")
 
     else:
-        # Caso: Datos no válidos
-        raise ValueError("Los datos proporcionados no contienen email ni fecha.")
+        # Caso: Sin filtros específicos, sumar todas las estadísticas
+        for registro in data:
+            if "estadisticas" in registro:
+                for enemigo in enemigos:
+                    if enemigo in registro["estadisticas"]:
+                        suma_enemigos[enemigo] += registro["estadisticas"][enemigo]
+        
+        plt.title("Estadísticas Totales")
+
+    # Generar el gráfico
+    plt.bar(suma_enemigos.keys(), suma_enemigos.values(), color=[colores[enemigo] for enemigo in enemigos])
+    plt.xlabel("Tipo de Enemigo")
+    plt.ylabel("Cantidad Total Matada")
+    plt.xticks(rotation=45)
+    
+    # Agregar etiquetas con los valores sobre cada barra
+    for i, v in enumerate(suma_enemigos.values()):
+        plt.text(i, v + 0.5, str(v), ha='center')
 
     # Guardar la imagen generada
     plt.tight_layout()

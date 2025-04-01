@@ -61,7 +61,7 @@ router.get('/stats', async (req, res) => {
     }
 });
 
-// Obtener estadísticas por email
+// Obtener estadísticas por email (sin incluir fecha)
 router.get('/stats/email/:email', validateEmail, async (req, res) => {
     try {
         const stats = await StatsController.getStatsByEmail(req.params.email);
@@ -73,14 +73,16 @@ router.get('/stats/email/:email', validateEmail, async (req, res) => {
             });
         }
         
+        // Filtrar fecha de los resultados
+        const filteredStats = stats.map(stat => {
+            const { fecha, ...statWithoutDate } = stat;
+            return statWithoutDate;
+        });
+        
         res.json({
             email: req.params.email,
-            registros: stats.length,
-            rango_fechas: {
-                inicio: stats[0].fecha,
-                fin: stats[stats.length - 1].fecha
-            },
-            data: stats
+            registros: filteredStats.length,
+            data: filteredStats
         });
     } catch (error) {
         res.status(500).json({
@@ -90,7 +92,7 @@ router.get('/stats/email/:email', validateEmail, async (req, res) => {
     }
 });
 
-// Obtener estadísticas por fecha
+// Obtener estadísticas por fecha (sin incluir email)
 router.get('/stats/date/:date', validateDate, async (req, res) => {
     try {
         const stats = await StatsController.getStatsByDate(req.params.date);
@@ -103,11 +105,17 @@ router.get('/stats/date/:date', validateDate, async (req, res) => {
             });
         }
         
+        // Filtrar email de los resultados
+        const filteredStats = stats.map(stat => {
+            const { email, ...statWithoutEmail } = stat;
+            return statWithoutEmail;
+        });
+        
         res.json({
             fecha: req.params.date,
-            usuarios_unicos: [...new Set(stats.map(s => s.email))].length,
-            registros: stats.length,
-            data: stats
+            usuarios_unicos: [...new Set(stats.map(s => s.email))].length, // Se mantiene para el conteo
+            registros: filteredStats.length,
+            data: filteredStats
         });
     } catch (error) {
         res.status(500).json({
@@ -136,29 +144,71 @@ router.get('/stats/filter', async (req, res) => {
             results = emailStats.filter(stat => 
                 dateStats.some(dStat => dStat._id.toString() === stat._id.toString())
             );
+            
+            // Si se proporcionan ambos parámetros, se incluyen ambos en la respuesta
+            if (results.length === 0) {
+                return res.status(404).json({ 
+                    error: 'Criterio sin resultados',
+                    parametros_usados: { email, date }
+                });
+            }
+            
+            res.json({
+                email: email,
+                fecha: date,
+                registros: results.length,
+                data: results
+            });
         } else if (email) {
+            // Si solo se proporciona email, filtrar la fecha
             results = await StatsController.getStatsByEmail(email);
+            
+            if (results.length === 0) {
+                return res.status(404).json({ 
+                    error: 'Criterio sin resultados',
+                    email: email
+                });
+            }
+            
+            // Eliminar fecha de los resultados
+            const filteredResults = results.map(stat => {
+                const { fecha, ...statWithoutDate } = stat;
+                return statWithoutDate;
+            });
+            
+            res.json({
+                email: email,
+                registros: filteredResults.length,
+                data: filteredResults
+            });
         } else if (date) {
+            // Si solo se proporciona date, filtrar el email
             results = await StatsController.getStatsByDate(date);
+            
+            if (results.length === 0) {
+                return res.status(404).json({ 
+                    error: 'Criterio sin resultados',
+                    fecha: date
+                });
+            }
+            
+            // Eliminar email de los resultados
+            const filteredResults = results.map(stat => {
+                const { email, ...statWithoutEmail } = stat;
+                return statWithoutEmail;
+            });
+            
+            res.json({
+                fecha: date,
+                registros: filteredResults.length,
+                data: filteredResults
+            });
         } else {
             return res.status(400).json({ 
                 error: 'Parámetros insuficientes',
                 parametros_validos: ['email', 'date']
             });
         }
-
-        if (results.length === 0) {
-            return res.status(404).json({ 
-                error: 'Criterio sin resultados',
-                parametros_usados: { email, date }
-            });
-        }
-
-        res.json({
-            parametros: { email, date },
-            registros: results.length,
-            data: results
-        });
     } catch (error) {
         res.status(500).json({
             error: 'Error en filtro combinado',

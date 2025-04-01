@@ -19,8 +19,7 @@ sql-service/.env
 # Ignora la carpeta de construcción/distribución
 /build
 /dist
-
-/images/users
+/stats-service/images
 
 # Ignora archivos específicos de macOS
 .DS_Store

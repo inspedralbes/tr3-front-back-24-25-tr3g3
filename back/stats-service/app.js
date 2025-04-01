@@ -48,6 +48,86 @@ const fetchStats = async (email, fecha) => {
     }
 };
 
+const postStats = async (data) => {
+    try {
+        const endpoint = `${STATS_SERVER_URL}/stats`;
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        throw new Error(`Error posting stats: ${error.message}`);
+    }
+};
+
+// Ruta para subir datos a MongoDB
+app.post("/upload-stats", async (req, res) => {
+    const { email, estadisticas } = req.body;
+
+    // Validar que se proporcionen los datos necesarios
+    if (
+        !email || !estadisticas ||
+        typeof estadisticas.ghost_killed !== "number" ||
+        typeof estadisticas.grunt_killed !== "number" ||
+        typeof estadisticas.horse_killed !== "number" ||
+        typeof estadisticas.ogre_killed !== "number" ||
+        typeof estadisticas.wolf_killed !== "number" ||
+        typeof estadisticas.boss_killed !== "number"
+    ) {
+        return res.status(400).json({
+            error: "Modelo incorrecto",
+            ejemplo: {
+                email: "usuario@dominio.com",
+                estadisticas: {
+                    ghost_killed: 0,
+                    grunt_killed: 0,
+                    horse_killed: 0,
+                    ogre_killed: 0,
+                    wolf_killed: 0,
+                    boss_killed: 0
+                }
+            }
+        });
+    }
+
+    // Generar la fecha automáticamente si no se proporciona
+    const fecha = new Date().toISOString().split("T")[0]; // Fecha actual en formato YYYY-MM-DD
+
+    try {
+        // Llamar a la ruta /stats para insertar los datos en MongoDB
+        const endpoint = `${STATS_SERVER_URL}/stats`;
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, fecha, estadisticas }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        res.status(201).json({
+            message: "Datos subidos exitosamente a MongoDB",
+            datos_enviados: { email, fecha, estadisticas },
+            respuesta_api: result,
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: "Error al subir los datos a MongoDB",
+            detalle: error.message,
+        });
+    }
+});
+
 // Ruta para generar una imagen basada en los parámetros proporcionados
 app.post("/generate", async (req, res) => {
     const { email, fecha } = req.body;
@@ -68,6 +148,8 @@ app.post("/generate", async (req, res) => {
             return res.status(404).json({ error: "No se encontraron registros" });
         }
 
+        console.log(`Datos obtenidos:, ${JSON.stringify(data)}`);
+
         // Crear archivo temporal con los datos obtenidos
         const tempDataFile = path.join(IMAGE_DIR, `temp_${filename}.json`);
         fs.writeFileSync(tempDataFile, JSON.stringify(data));
@@ -75,7 +157,7 @@ app.post("/generate", async (req, res) => {
         console.log(`Datos guardados en ${tempDataFile}`);
         
         // Usar spawn para ejecutar el script de Python
-        const pythonProcess = spawn("python3", ["generate_image.py", tempDataFile, filepath]);
+        const pythonProcess = spawn("py", ["generate_image.py", tempDataFile, filepath]);
 
         pythonProcess.stdout.on("data", (data) => {
             console.log(`stdout: ${data.toString()}`);
