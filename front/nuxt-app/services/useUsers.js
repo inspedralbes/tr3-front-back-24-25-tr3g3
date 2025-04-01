@@ -8,19 +8,18 @@ export function useUsers() {
     const route = useRoute();
 
     const config = useRuntimeConfig();
-    const BASE_URL = config.public.API_CONFIG_URL + '/config-users';
+    const BASE_URL = config.public.API_CONFIG_URL + '/config-players';
 
     const getUsers = async () => {
         const token = authStore.token; // Obtiene el token del store
     
-        // if (!token) {
-        //     console.error("No hay token disponible");
-        //     throw new Error("Token no disponible");
-        // }
+        if (!token) {
+            console.error("No hay token disponible");
+            throw new Error("Token no disponible");
+        }
     
         try {
-            // return await $fetch(`${BASE_URL}/users`, {
-            return await $fetch('/response-examples/users.json', {
+            return await $fetch(`${BASE_URL}/players`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}` // Añade el token a los headers
@@ -54,16 +53,16 @@ export function useUsers() {
         }
     };
 
-    const updateUser = async (user) => {
+    const updateUser = async (id, user) => {
         const token = authStore.token; // Obtiene el token del store
     
         if (!token) {
             console.error("No hay token disponible");
             throw new Error("Token no disponible");
         }
-        
+
         try {
-            return await $fetch(`${BASE_URL}/users/${user.id}`, {
+            return await $fetch(`${BASE_URL}/players/${id}/stats`, {
                 method: 'PUT',
                 headers: {
                     Authorization: `Bearer ${token}` // Añade el token a los headers

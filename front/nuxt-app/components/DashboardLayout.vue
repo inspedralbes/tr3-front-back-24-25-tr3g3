@@ -59,11 +59,11 @@
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/users"
+          <NuxtLink to="/players"
             class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <img class="w-5 h-5 opacity-50 transition-opacity duration-75 group-hover:opacity-100"
-              src="/users-icon.png" alt="Enemies Icon">
-            <span class="flex-1 ms-3 whitespace-nowrap">Users</span>
+              src="/players-icon.png" alt="Enemies Icon">
+            <span class="flex-1 ms-3 whitespace-nowrap">Players</span>
           </NuxtLink>
         </li>
         <li>
