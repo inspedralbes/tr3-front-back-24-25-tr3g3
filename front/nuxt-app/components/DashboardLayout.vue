@@ -62,7 +62,7 @@
           <NuxtLink to="/players"
             class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <img class="w-5 h-5 opacity-50 transition-opacity duration-75 group-hover:opacity-100"
-              src="/players-icon.png" alt="Enemies Icon">
+              src="/g-icon.png" alt="Enemies Icon">
             <span class="flex-1 ms-3 whitespace-nowrap">Players</span>
           </NuxtLink>
         </li>
@@ -72,6 +72,14 @@
             <img class="w-5 h-5 opacity-50 transition-opacity duration-75 group-hover:opacity-100"
               src="/enemies-icon.png" alt="Enemies Icon">
             <span class="flex-1 ms-3 whitespace-nowrap">Enemics</span>
+          </NuxtLink>
+        </li>
+        <li>
+          <NuxtLink to="/statistics"
+            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <img class="w-5 h-5 opacity-50 transition-opacity duration-75 group-hover:opacity-100"
+              src="/statistics-icon.png" alt="Enemies Icon">
+            <span class="flex-1 ms-3 whitespace-nowrap">Statistics</span>
           </NuxtLink>
         </li>
       </ul>

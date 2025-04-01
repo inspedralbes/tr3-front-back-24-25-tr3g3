@@ -75,13 +75,8 @@
       <div class="relative mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-900">
         <div class="mt-3 text-center">
           <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Editar Usuario (ID: {{
-            currentUserToEdit?.id }})</h3>
+            currentUserToEdit?.id }}, email: {{ currentUserToEdit?.email }})</h3>
           <div class="mt-2 px-7 py-3">
-            <div class="mb-4 text-left">
-              <label for="edit-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-              <input type="email" id="edit-email" v-model="currentUserToEdit.email"
-                class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white">
-            </div>
             <div class="mb-4 text-left">
               <label for="edit-gold" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gold</label>
               <input type="number" id="edit-gold" v-model.number="currentUserToEdit.gold"
