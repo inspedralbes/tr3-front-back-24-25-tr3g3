@@ -80,7 +80,7 @@ export function useAuth() {
     const register = async (username, email, password) => {
         try {
             console.log("Enviando solicitud de registro...");
-            return await $fetch(`${BASE_URL}/send-verification-email`, {
+            return await $fetch(`${BASE_URL}/unity/register`, {
                 method: "POST",
                 body: { username, email, password },
                 credentials: "include",
