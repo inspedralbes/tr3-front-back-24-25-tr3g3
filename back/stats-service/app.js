@@ -5,6 +5,7 @@ import path from "path";
 import fetch from "node-fetch"; // Asegúrate de instalar node-fetch si usas Node < 18
 import { fileURLToPath } from "url";
 import 'dotenv/config'; // Para variables de entorno
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,6 +20,7 @@ if (!fs.existsSync(IMAGE_DIR)) {
     fs.mkdirSync(IMAGE_DIR, { recursive: true });
 }
 
+app.use(cors()); // Habilitar CORS para todas las rutas
 app.use(express.json());
 
 // Función para hacer fetch a la API de estadísticas
@@ -179,7 +181,7 @@ app.post("/generate", async (req, res) => {
 
             res.json({
                 message: "Imagen generada",
-                url: `${process.env.BASE_URL}/images/${filename}`,
+                url: `${filename}`,
                 metadata: {
                     parametros: { email, fecha },
                     registros: data.length,

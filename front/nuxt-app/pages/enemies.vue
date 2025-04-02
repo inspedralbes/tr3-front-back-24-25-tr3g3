@@ -27,7 +27,7 @@
                         :class="selectedEnemyIndex === enemies.indexOf(enemy) ? 'bg-blue-200 border-l-4 border-blue-500' : 'bg-white hover:bg-gray-200'">
                         <div class="w-12 h-12 mr-3 bg-gray-300 rounded-md flex items-center justify-center text-xl">
                             <!-- Reemplazamos el icono con la imagen -->
-                            <img :src="enemy.img" alt="Enemy Image" class="w-full h-full object-cover rounded-md" />
+                            <img :src="'/enemies-images/'+enemy.img" alt="Enemy Image" class="w-full h-full object-cover rounded-md" />
                         </div>
                         <div>
                             <p class="font-medium">{{ enemy.name }}</p>

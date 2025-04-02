@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     public: {
       API_CONFIG_URL: process.env.API_CONFIG_URL,
       API_AUTH_URL: process.env.API_AUTH_URL,
+      API_STATISTICS_URL: process.env.API_STATISTICS_URL,
     },
   },
   modules: ['@pinia/nuxt'],
