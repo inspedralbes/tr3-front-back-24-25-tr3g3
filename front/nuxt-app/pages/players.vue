@@ -1,14 +1,14 @@
 <template>
   <DashboardLayout>
-    <h1 class="text-2xl font-bold mb-4">Gestión de Usuarios</h1>
+    <h1 class="text-2xl font-bold mb-4">Gestió d'Usuaris</h1>
 
     <div class="mb-4">
-      <label for="user-search" class="sr-only">Buscar por Email</label>
-      <input type="search" id="user-search" v-model="searchQuery" placeholder="Buscar por email..."
+      <label for="user-search" class="sr-only">Cercar per Correu Electrònic</label>
+      <input type="search" id="user-search" v-model="searchQuery" placeholder="Cercar per correu electrònic..."
         class="block w-full p-2 ps-4 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
     </div>
 
-    <div v-if="isLoading" class="text-center py-4">Cargando usuarios...</div>
+    <div v-if="isLoading" class="text-center py-4">Carregant usuaris...</div>
     <div v-if="loadError" class="text-center py-4 text-red-500">{{ loadError }}</div>
 
     <div v-if="!isLoading && !loadError && users.length > 0" class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -16,14 +16,14 @@
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" class="px-6 py-3">ID</th>
-            <th scope="col" class="px-6 py-3">Email</th>
-            <th scope="col" class="px-6 py-3">Acciones</th>
+            <th scope="col" class="px-6 py-3">Correu Electrònic</th>
+            <th scope="col" class="px-6 py-3">Accions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="filteredUsers.length === 0">
-            <td colspan="3" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400"> No hay usuarios que
-              coincidan con la búsqueda "{{ searchQuery }}".
+            <td colspan="3" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400"> No hi ha usuaris que
+              coincideixin amb la cerca "{{ searchQuery }}".
             </td>
           </tr>
           <tr v-else v-for="user in paginatedUsers" :key="user.id"
@@ -41,18 +41,18 @@
     </div>
     <div v-if="!isLoading && !loadError && users.length === 0"
       class="text-center py-4 text-gray-500 dark:text-gray-400">
-      No se encontraron usuarios.
+      No s'han trobat usuaris.
     </div>
 
     <nav v-if="!isLoading && !loadError && totalPages > 1" class="flex items-center justify-between pt-4"
       aria-label="Table navigation">
       <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
-        Mostrando
+        Mostrant
         <span class="font-semibold text-gray-900 dark:text-white">{{ paginationInfo.startItem }}-{{
           paginationInfo.endItem }}</span>
         de
         <span class="font-semibold text-gray-900 dark:text-white">{{ filteredUsers.length }}</span>
-        <span v-if="searchQuery"> (filtrado de {{ users.length }} total)</span>
+        <span v-if="searchQuery"> (filtrat de {{ users.length }} total)</span>
       </span>
       <ul class="inline-flex items-center -space-x-px">
         <li>
@@ -64,7 +64,7 @@
         <li>
           <button @click="nextPage" :disabled="currentPage === totalPages"
             :class="['px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white', { 'opacity-50 cursor-not-allowed': currentPage === totalPages }]">
-            Siguiente
+            Següent
           </button>
         </li>
       </ul>
@@ -74,33 +74,33 @@
       class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-60">
       <div class="relative mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white dark:bg-gray-900">
         <div class="mt-3 text-center">
-          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Editar Usuario (ID: {{
-            currentUserToEdit?.id }}, email: {{ currentUserToEdit?.email }})</h3>
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">Editar Usuari (ID: {{
+            currentUserToEdit?.id }}, correu electrònic: {{ currentUserToEdit?.email }})</h3>
           <div class="mt-2 px-7 py-3">
             <div class="mb-4 text-left">
-              <label for="edit-gold" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Gold</label>
+              <label for="edit-gold" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Or</label>
               <input type="number" id="edit-gold" v-model.number="currentUserToEdit.gold"
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white">
             </div>
             <div class="mb-4 text-left">
-              <label for="edit-timePlayed" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tiempo
-                Jugado (segundos)</label>
+              <label for="edit-timePlayed" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Temps
+                Jugat (segons)</label>
               <input type="number" id="edit-timePlayed" v-model.number="currentUserToEdit.timePlayed"
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white">
             </div>
             <div class="mb-4 text-left">
-              <label for="edit-health" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Salud</label>
+              <label for="edit-health" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Salut</label>
               <input type="number" id="edit-health" v-model.number="currentUserToEdit.health"
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white">
             </div>
             <div class="mb-4 text-left">
-              <label for="edit-damage" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Daño</label>
+              <label for="edit-damage" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dany</label>
               <input type="number" id="edit-damage" v-model.number="currentUserToEdit.damage"
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white">
             </div>
             <div class="mb-4 text-left">
-              <label for="edit-attackSpeed" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Velocidad
-                de Ataque</label>
+              <label for="edit-attackSpeed" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Velocitat
+                d'Atac</label>
               <input type="number" step="0.1" id="edit-attackSpeed" v-model.number="currentUserToEdit.attackSpeed"
                 class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white">
             </div>
@@ -108,11 +108,11 @@
           <div class="items-center px-4 py-3">
             <button @click="saveUserChanges" id="save-button"
               class="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 mr-2">
-              Guardar Cambios
+              Guardar Canvis
             </button>
             <button @click="closeEditModal" id="cancel-button"
               class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300">
-              Cancelar
+              Cancel·lar
             </button>
           </div>
           <p v-if="editError" class="text-red-500 mt-2">{{ editError }}</p>
@@ -250,7 +250,7 @@ const closeEditModal = () => {
 // Guardar cambios: envía el objeto currentUserToEdit completo
 const saveUserChanges = async () => {
   if (!currentUserToEdit.value || !currentUserToEdit.value.id) {
-    editError.value = "No hay un usuario seleccionado para editar.";
+    editError.value = "No hi ha cap usuari seleccionat per editar.";
     return;
   }
   editError.value = null;
@@ -272,7 +272,7 @@ const saveUserChanges = async () => {
       // await onMounted(); // O alguna lógica de recarga más específica
     }
 
-    editSuccess.value = "Usuario actualizado correctamente.";
+    editSuccess.value = "Usuari actualitzat correctament.";
     setTimeout(() => {
       closeEditModal();
     }, 1500); // Cierra el modal después de un breve éxito

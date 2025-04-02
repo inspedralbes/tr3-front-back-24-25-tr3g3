@@ -1,14 +1,14 @@
 <template>
     <DashboardLayout>
-        <h1 class="text-2xl font-bold mb-6">Configurar Dificultades</h1>
+        <h1 class="text-2xl font-bold mb-6">Configurar Dificultats</h1>
 
         <div v-if="loadingInitial" class="text-center py-10">
-            <p>Cargando configuraciones...</p>
+            <p>Carregant configuracions...</p>
         </div>
 
         <div v-if="errorInitial"
             class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-            <span class="font-medium">¡Error al cargar!</span> {{ errorInitial }}
+            <span class="font-medium">Error en carregar!</span> {{ errorInitial }}
         </div>
 
         <div v-if="!loadingInitial && !errorInitial" class="space-y-8">
@@ -23,24 +23,24 @@
 
                         <div v-for="(enemy, index) in config.enemies" :key="`${config.id}-${enemy.name}`"
                             class="flex flex-col items-center p-4 border dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
-                            <img :src="getEnemyImageUrl(enemy.name)" :alt="`Imagen de ${enemy.name}`"
+                            <img :src="getEnemyImageUrl(enemy.name)" :alt="`Imatge de ${enemy.name}`"
                                 class="w-16 h-16 object-contain mb-3" @error="onImageError" />
                             <span class="font-medium mb-2 capitalize dark:text-white">{{ enemy.name }}</span>
                             <input type="number" min="0" v-model.number="enemy.quantity"
                                 class="w-20 p-2 text-center border border-gray-300 rounded-lg dark:bg-gray-600 dark:border-gray-500 dark:text-white focus:ring-blue-500 focus:border-blue-500"
-                                :aria-label="`Cantidad de ${enemy.name}`" />
+                                :aria-label="`Quantitat de ${enemy.name}`" />
                         </div>
                     </div>
 
                     <div class="flex items-center justify-end space-x-4">
-                        <span v-if="saveSuccess[config.id]" class="text-sm text-green-600 dark:text-green-400">¡Guardado
-                            correctamente!</span>
+                        <span v-if="saveSuccess[config.id]" class="text-sm text-green-600 dark:text-green-400">Guardat
+                            correctament!</span>
                         <span v-if="saveError[config.id]" class="text-sm text-red-600 dark:text-red-400">Error: {{
                             saveError[config.id] }}</span>
 
                         <button type="submit" :disabled="saving[config.id]"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-50 disabled:cursor-not-allowed">
-                            {{ saving[config.id] ? 'Guardando...' : 'Guardar Cambios' }}
+                            {{ saving[config.id] ? 'Guardant...' : 'Guardar Canvis' }}
                         </button>
                     </div>
                 </form>

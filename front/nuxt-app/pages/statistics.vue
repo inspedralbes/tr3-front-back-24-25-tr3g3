@@ -1,46 +1,46 @@
 <template>
     <DashboardLayout>
-        <h1 class="text-2xl font-bold mb-6">Estadísticas</h1>
+        <h1 class="text-2xl font-bold mb-6">Estadístiques</h1>
 
         <form @submit.prevent="fetchStatistics" class="mb-8 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             <div class="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
-                    <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Filtrar por
-                        Email (Opcional)</label>
+                    <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Filtrar per
+                        Correu electrònic (Opcional)</label>
                     <input type="email" id="email" v-model="email"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        placeholder="ejemplo@dominio.com" />
+                        placeholder="exemple@domini.com" />
                 </div>
                 <div>
-                    <label for="fecha" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Filtrar por
-                        Fecha (Opcional)</label>
+                    <label for="fecha" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Filtrar per
+                        Data (Opcional)</label>
                     <input type="date" id="fecha" v-model="fecha"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                 </div>
             </div>
             <p v-if="!email && !fecha" class="text-sm text-yellow-600 dark:text-yellow-400 mb-4">
-                Por favor, introduce un email o selecciona una fecha para generar las estadísticas.
+                Si us plau, introdueix un correu electrònic o selecciona una data per generar les estadístiques.
             </p>
             <button type="submit" :disabled="loading || (!email && !fecha)"
                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-50 disabled:cursor-not-allowed">
-                {{ loading ? 'Generando...' : 'Generar Estadísticas' }}
+                {{ loading ? 'Generant...' : 'Generar Estadístiques' }}
             </button>
         </form>
 
         <div v-if="loading" class="text-center py-4">
-            <p>Cargando resultados...</p>
+            <p>Carregant resultats...</p>
         </div>
 
         <div v-if="error" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
             role="alert">
-            <span class="font-medium">¡Error!</span> {{ error }}
+            <span class="font-medium">Error!</span> {{ error }}
         </div>
 
         <div v-if="imageUrl" class="mt-6 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold mb-4">Resultados</h2>
+            <h2 class="text-xl font-semibold mb-4">Resultats</h2>
             <div class="mb-4">
-                <h3 class="text-lg font-medium mb-2">Imagen Generada:</h3>
-                <img :src="fullImageUrl" alt="Gráfico de estadísticas"
+                <h3 class="text-lg font-medium mb-2">Imatge Generada:</h3>
+                <img :src="fullImageUrl" alt="Gràfic d'estadístiques"
                     class="max-w-full h-auto border dark:border-gray-600 rounded" />
             </div>
         </div>
@@ -79,7 +79,7 @@ const fullImageUrl = computed(() => {
 const fetchStatistics = async () => {
     // Validar que al menos uno de los campos tiene valor
     if (!email.value && !fecha.value) {
-        error.value = "Debes proporcionar un email o una fecha.";
+        error.value = "Has de proporcionar un correu electrònic o una data.";
         return;
     }
 
