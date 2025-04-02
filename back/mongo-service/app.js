@@ -3,17 +3,20 @@ import cors from 'cors';
 import 'dotenv/config';
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import MongoDBController from './controllers/mongoDBcontroller.js';
+import StatsController from './controllers/statsController.js';
 import mongoRouter from './routes/mongo-routes.js';
+import statsRouter from './routes/stats-routes.js';
 
 const app = express();
 const port = process.env.PORT;
-const MONGO_URI = process.env.MONGO_URI; // Asegúrate de que la URI de MongoDB esté en tu archivo .env
+const MONGO_URI = process.env.MONGO_URI;
 
 app.use(cors());
 app.use(express.json());
 app.use('/', mongoRouter);
+app.use('/', statsRouter); // Agregamos las rutas de estadísticas
 
-// Establecer la conexión con MongoDB antes de iniciar el servidor Express
+// Conexión a MongoDB
 async function connectToMongo() {
   try {
     const client = new MongoClient(MONGO_URI, {
@@ -26,8 +29,11 @@ async function connectToMongo() {
     });
 
     await client.connect();
-    const db = client.db('enemies'); // Usa la base de datos predeterminada o la que prefieras
-    MongoDBController.setDb(db); // Pasa la conexión a MongoDBController
+    const dbEnemies = client.db('enemies'); // Base de datos de enemigos
+    const dbStats = client.db('stats'); // Base de datos de estadísticas
+
+    MongoDBController.setDb(dbEnemies);
+    StatsController.setDb(dbStats);
 
     console.log('✅ Conexión a MongoDB establecida');
   } catch (error) {
@@ -37,7 +43,6 @@ async function connectToMongo() {
 
 connectToMongo().then(() => {
   app.listen(port, () => {
-    console.log(`🚀 Mongo service listo en http://localhost:${port}`);
+    console.log(`🚀 Servicio listo en http://localhost:${port}`);
   });
 });
-         
