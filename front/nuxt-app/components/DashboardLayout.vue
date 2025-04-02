@@ -78,7 +78,7 @@
           <NuxtLink to="/difficulties"
             class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <img class="w-5 h-5 opacity-50 transition-opacity duration-75 group-hover:opacity-100"
-              src="/difficulties-icon.png" alt="Enemies Icon">
+              src="/d-icon.png" alt="Enemies Icon">
             <span class="flex-1 ms-3 whitespace-nowrap">Difficulties</span>
           </NuxtLink>
         </li>
