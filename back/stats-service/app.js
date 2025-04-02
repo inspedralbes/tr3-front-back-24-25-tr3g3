@@ -157,7 +157,7 @@ app.post("/generate", async (req, res) => {
         console.log(`Datos guardados en ${tempDataFile}`);
         
         // Usar spawn para ejecutar el script de Python
-        const pythonProcess = spawn("py", ["generate_image.py", tempDataFile, filepath]);
+        const pythonProcess = spawn("python3", ["generate_image.py", tempDataFile, filepath]);
 
         pythonProcess.stdout.on("data", (data) => {
             console.log(`stdout: ${data.toString()}`);
